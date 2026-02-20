@@ -414,13 +414,17 @@ export default function App() {
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
+    // Handle OAuth hash fragment (#access_token=...)
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
       setBooting(false);
     });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) setBooting(false);
     });
+
     return () => subscription.unsubscribe();
   }, []);
 
